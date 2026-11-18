@@ -1,0 +1,26 @@
+{
+  "name": "com.photophobic.heatmap-unity",
+  "displayName": "heatmap-unity",
+  "version": "0.1.0",
+  "unity": "6000.6",
+  "unityRelease": "2f1",
+  "description": "Replace this with your own description of the package. \n\nFor best results, use this text to summarize: \n▪ What the package does \n▪ How it can benefit the user \n\nNote: Special formatting characters are supported, including line breaks ('\\n') and bullets ('\\u25AA').",
+  "dependencies": {
+    "com.unity.test-framework": "1.8.0"
+  },
+  "author": {
+    "name": "Daniil Kurachkin",
+    "url": "https://github.com/kDanik/heatmap-unity",
+    "email": "example@email.com"
+  },
+  "changelogUrl": "https://example.com/changelog.html",
+  "documentationUrl": "https://example.com/",
+  "licensesUrl": "https://example.com/licensing.html",
+  "hideInEditor": false,
+  "repository": {
+    "url": "git@github.com:kDanik/heatmap-unity.git",
+    "type": "git",
+    "revision": "6878f0ab2a7654b18964ccb15a14db669ba06166"
+  },
+  "_fingerprint": "f7beec49a27f69977781a65e62714c53"
+}

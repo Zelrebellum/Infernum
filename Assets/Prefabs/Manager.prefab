@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6426600540507772770}
   - component: {fileID: 7995916057039057832}
   - component: {fileID: 1033188292635389544}
+  - component: {fileID: 8347532555686729222}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -299,7 +300,6 @@ MonoBehaviour:
   levelBoundary: {fileID: 0}
   blinkTransition: {fileID: 0}
   slowdownOverlay: {fileID: 0}
-  enemy: {fileID: 0}
 --- !u!114 &6426600540507772770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,8 +312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d555557afadd9cfd1aa9836904dcbbc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  levelType: 1
-  nextSceneName: 
+  levelType: 0
+  nextSceneName: Wrath
   slothOverlay: {fileID: 0}
   wrathHUD: {fileID: 0}
 --- !u!114 &7995916057039057832
@@ -323,7 +323,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2077191435195531950}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7236940d9f92f46b2b2da7d32371e0fd, type: 3}
   m_Name: 
@@ -369,3 +369,21 @@ MonoBehaviour:
   maxSpeedPenalty: 0.8
   swampSpeedPenalty: 0.1
   crouchAccumulationMultiplier: 1.25
+--- !u!114 &8347532555686729222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077191435195531950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af210dc2a46f14b4480719ec3e7f57bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Photophobic.HeatmapUnity.Recorders::ObjectPositionRecorder
+  interval: 0.5
+  record: 1
+  objectToRecord: {fileID: 0}
+  dataPath: Assets/PlaytestData.json
+  eventName: Locations
+  createFileIfNonFound: 1

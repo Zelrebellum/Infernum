@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.photophobic.heatmap-unity": {
+      "version": "file:com.photophobic.heatmap-unity",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.test-framework": "1.8.0"
+      }
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 1,

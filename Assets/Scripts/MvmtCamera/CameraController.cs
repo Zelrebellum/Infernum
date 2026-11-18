@@ -20,6 +20,8 @@ public class CameraController : MonoBehaviour
     private float targetFOV;
     private float fovTransitionSpeed;
 
+    private float TheMostFov;
+
     private bool changingFOV;
     
     public float BaseFOV => baseFOV;

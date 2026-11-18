@@ -1,0 +1,21 @@
+{
+    "name": "Photophobic.HeatmapUnity.Writers",
+    "rootNamespace": "Photophobic.HeatmapUnity",
+    "references": [
+        "Photophobic.HeatmapUnity",
+        "Photophobic.HeatmapUnity.Models"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

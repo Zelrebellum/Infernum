@@ -5,7 +5,7 @@ public class GroundSnapping : MonoBehaviour
     private LayerMask groundLayerMask;
 
     [SerializeField]
-    private float yOffset = 1;
+    private float yOffset = 5;
 
     [SerializeField] private float snapDistance = 1.0f;
 

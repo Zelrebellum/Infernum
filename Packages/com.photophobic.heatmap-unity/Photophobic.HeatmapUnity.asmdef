@@ -1,0 +1,16 @@
+{
+    "name": "Photophobic.HeatmapUnity",
+    "rootNamespace": "",
+    "references": [
+        "Photophobic.HeatmapUnity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -7018,6 +7018,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1283162786}
     - target: {fileID: 8347532555686729222, guid: adad24a04d0236d44809594d08c6aca1, type: 3}
+      propertyPath: dataPath
+      value: PlaytestData.json
+      objectReference: {fileID: 0}
+    - target: {fileID: 8347532555686729222, guid: adad24a04d0236d44809594d08c6aca1, type: 3}
       propertyPath: objectToRecord
       value: 
       objectReference: {fileID: 242000358}

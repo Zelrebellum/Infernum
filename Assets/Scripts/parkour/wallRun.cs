@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public class WallRun : MonoBehaviour
 {
@@ -44,6 +45,8 @@ public class WallRun : MonoBehaviour
     public bool atHeight = false;
 
     public bool Wallrunning => wallrunning;
+
+    private float delayTimer;
     
 
     private void Start()
@@ -55,6 +58,7 @@ public class WallRun : MonoBehaviour
 
     private void Update()
     {
+        delayTimer -= Time.deltaTime;
         if (!wallrunning)
         {
             return;
@@ -114,6 +118,7 @@ public class WallRun : MonoBehaviour
 
     public void WallJump(InputAction.CallbackContext context)
     {
+        Collider prevCollider = hitInfo.collider;
         if (!context.performed ||
             wallrunning ||
             movement.IsCrouching)
@@ -162,6 +167,11 @@ public class WallRun : MonoBehaviour
             return;
         }
 
+        if (delayTimer > 0.0f && hitInfo.collider.Equals(prevCollider))
+        {
+            return;
+        }
+
         initialHeight = transform.position.y;
         wallrunning = true;
         rBody.useGravity = false;
@@ -188,7 +198,7 @@ public class WallRun : MonoBehaviour
 
         transform.rotation = rotation;
         onWall = true;
-
+        delayTimer = 0.5f;
         camControl.EnableFOV(camControl.BaseFOV, FOVfade);
     }
 

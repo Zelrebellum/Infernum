@@ -247,7 +247,7 @@ public class MainMenuManager : MonoBehaviour
 
         // Restore normal game speed before entering the level.
         Time.timeScale = 1f;
-        SceneManager.LoadScene("Sloth");
+        SceneManager.LoadScene("StoryIntro");
     }
 
     public void OpenOptions()

@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 public class LedgeMantle : MonoBehaviour
 {
@@ -17,58 +18,84 @@ public class LedgeMantle : MonoBehaviour
 
     [Header("Mantling")]
     [SerializeField, Range(0, 20)]
-    private float climbSpeed;
+    private float climbSpeed = 5.0f;
     private Vector3 approachVelocity;
     [SerializeField, Range(0f, 1f)]
     private float momentumRetention = 0.8f;
 
-    [SerializeField] private float scaleCooldown = 0.5f;
+    [SerializeField] private float minimumMantleSpeed = 1.0f;
+    [SerializeField] private float approachVelocityInfluence = 0.6f;
+    [SerializeField] private float mantleYOffset = 0.3f;
+    [SerializeField] private float mantleForwardOffset = 0.5f;
+    [SerializeField] private float mantleArcHeight = 1f;
+
+
+    [SerializeField] private float mantleCooldown = 0.5f;
 
     // Component references
     private PlayerMovement movement;
     private Rigidbody rBody;
+    private CapsuleCollider collider;
+    private bool hasLandingPosition;
     
     private bool climbing;
     public bool IsMantling => climbing;
     private RaycastHit hitInfo;
     private float waitTime;
+    
+    private Vector3 startPos;
+    private Vector3 controlPoint;
+    private Vector3 landingPosition;
+    
+    private float mantleDuration;
+    private float mantleTimer;
 
     private void Start()
     {
         movement = GetComponent<PlayerMovement>();
         rBody = GetComponent<Rigidbody>();
+        collider = GetComponent<CapsuleCollider>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (climbing)
         {
+            mantleTimer += Time.fixedDeltaTime;
+            
+            float t = Mathf.Clamp01(mantleTimer / mantleDuration);
+            float u = 1 - t;
+            
+            Vector3 nextPos = u * u * startPos + 
+                              2 * u * t * controlPoint +
+                              t * t * landingPosition;
+            
             rBody.useGravity = false;
-            Vector3 position = transform.position;
 
-            float bottom = transform.position.y - transform.localScale.y;
+            rBody.MovePosition(nextPos);
 
-            if (bottom < hitInfo.collider.bounds.center.y +
-                         hitInfo.collider.bounds.size.y / 2f)
+            if (t >= 1)
             {
-                position.y += climbSpeed * Time.deltaTime;
-                rBody.MovePosition(position);
-            }
-            else
-            {
-                Vector3 exitVelocity = approachVelocity * momentumRetention;
+                Vector3 mantleDirection = landingPosition - startPos;
+                mantleDirection.y = 0f;
+                mantleDirection.Normalize();
+
+                float exitSpeed = approachVelocity.magnitude * momentumRetention;
+
+                Vector3 exitVelocity = mantleDirection * exitSpeed;
 
                 rBody.linearVelocity = new Vector3(
                     exitVelocity.x,
-                    rBody.linearVelocity.y,
+                    0f,
                     exitVelocity.z
                 );
-
-                waitTime = scaleCooldown;
+            
+                waitTime = mantleCooldown;
                 climbing = false;
                 rBody.useGravity = true;
                 Debug.Log("Mantling finished");
             }
+
             return;
         }
         
@@ -106,31 +133,66 @@ public class LedgeMantle : MonoBehaviour
             return;
         }
 
-        float ledge = Mathf.Abs(
-            (hitInfo.collider.bounds.center.y +
-             hitInfo.collider.bounds.size.y / 2f) -
-            transform.position.y
-        );
+        float bottom = collider.bounds.min.y;
+        float platformTop = hitInfo.collider.bounds.max.y;
+            
+        float heightDifference = platformTop - bottom;
+        float landingY = transform.position.y + heightDifference + mantleYOffset;
+
+        Vector3 landingXZ = hitInfo.point + transform.forward * (collider.radius + mantleForwardOffset);
         
-        if (ledge <= maxLedgeHeight && ledge > minLedgeHeight)
+        if (heightDifference <= maxLedgeHeight && heightDifference > minLedgeHeight)
         {
+            startPos = transform.position;
+            landingPosition = new Vector3(landingXZ.x, landingY, landingXZ.z);
+            hasLandingPosition = true;
+            
+                    
+            controlPoint = new Vector3(
+                transform.position.x,
+                landingPosition.y + mantleArcHeight,
+                transform.position.z
+            );
+            
             Debug.Log("Climbing");
             climbing = true;
             rBody.useGravity = false;
             Vector3 velocity = rBody.linearVelocity;
             approachVelocity = new  Vector3(velocity.x, 0, velocity.z);
+
+            float mantleSpeed = climbSpeed + (approachVelocity.magnitude * approachVelocityInfluence);
+            mantleSpeed = Mathf.Max(minimumMantleSpeed, mantleSpeed);
+            float mantleDistance = Vector3.Distance(transform.position, landingPosition);
+            
+            mantleDuration = mantleDistance / mantleSpeed;
             rBody.linearVelocity = Vector3.zero;
+            mantleTimer = 0f;
             Debug.Log("Mantling started");
         }
     }
 
     private void OnDrawGizmos()
     {
+        // Draw the forward ledge-detection ray.
         Gizmos.color = Color.blue;
 
-        Vector3 position = transform.position;
-        //position.y += transform.localScale.y * 3/4;
+        Gizmos.DrawRay(
+            transform.position,
+            transform.forward * ledgeDetectionDistance
+        );
 
-        Gizmos.DrawRay(position, transform.forward);
+        // Only draw a landing point after one has been calculated.
+        if (!Application.isPlaying || !hasLandingPosition)
+        {
+            return;
+        }
+
+        // Draw the calculated landing position.
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(landingPosition, 0.2f);
+
+        // Draw a line from the player to the landing position.
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, landingPosition);
     }
 }

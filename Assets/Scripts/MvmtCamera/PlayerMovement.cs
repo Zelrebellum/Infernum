@@ -36,8 +36,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField, Min(1f)]
     private float risingGravityMultiplier = 1.2f;
-    [SerializeField, Min(1f)]
-    private float fallingGravityMultiplier = 1.6f;
+
+    [SerializeField, Min(1f)] private float fallingGravityMultiplier = 1.6f;
+    [SerializeField] private float jumpBufferTime = 0.1f;
+    [SerializeField] private float jumpBufferTimer;
     private bool wasAirborne;
     private float previousHorizontalSpeed;
     
@@ -131,6 +133,8 @@ public class PlayerMovement : MonoBehaviour
         airborne = !groundHit ||
                    Vector3.Dot(hitInfo.normal, Vector3.up) < minimumGroundNormal;
         
+        ProcessJumpBuffer();
+        
         Vector3 velocity = rb.linearVelocity;
 
         float horizontalSpeed = new Vector3(
@@ -205,7 +209,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if (dash.HasDashMomentum)
+        if (dash.HasDashMomentum || ledgeMantle.IsMantling)
         {
             return;
         }
@@ -286,6 +290,46 @@ public class PlayerMovement : MonoBehaviour
 
         rb.AddForce(additionalGravity, ForceMode.Acceleration);
     }
+
+    private void ProcessJumpBuffer()
+    {
+        if (jumpBufferTimer > 0)
+        {
+
+            if ((!airborne || wall.Wallrunning) &&
+                !isCrouching &&
+                !ledgeMantle.IsMantling)
+            {
+                Debug.Log("JUMP PERFORMED!");
+                Debug.Log($"Buffer: {jumpBufferTimer}, Airborne: {airborne}, " +
+                          $"Crouching: {isCrouching}, Mantling: {ledgeMantle.IsMantling}");
+                DoJump();
+                jumpBufferTimer = 0;
+            }
+            
+            jumpBufferTimer -= Time.fixedDeltaTime;
+            jumpBufferTimer = Mathf.Clamp(jumpBufferTimer, 0, jumpBufferTime);
+        }
+    }
+
+    private void DoJump()
+    {
+        float effectiveJumpForce = jumpForce * wrathJumpMultiplier;
+        Vector3 velocity = rb.linearVelocity;
+
+        if (velocity.y < 0f)
+        {
+            velocity.y = 0f;
+            rb.linearVelocity = velocity;
+        }
+        
+        rb.AddForce(transform.up * effectiveJumpForce, ForceMode.Impulse);
+
+        if (wall.Wallrunning)
+        {
+            wall.StopWallrun();
+        }       
+    }
     
     public void SetEndZoneJump(bool reduced)
     {
@@ -319,7 +363,8 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         moveDirection = Vector2.zero;
-
+        jumpBufferTimer = 0;
+        
         if (isCrouching)
         {
             Stand();
@@ -341,20 +386,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (!context.performed ||
-            (airborne && !wall.Wallrunning) ||
-            isCrouching)
+        if (!context.performed)
         {
             return;
         }
-
-        float effectiveJumpForce = jumpForce * wrathJumpMultiplier;
-        rb.AddForce(transform.up * effectiveJumpForce, ForceMode.Impulse);
-
-        if (wall.Wallrunning)
-        {
-            wall.StopWallrun();
-        }
+        
+        jumpBufferTimer = jumpBufferTime;
     }
 
     public void OnCrouch(InputAction.CallbackContext context)
